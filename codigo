@@ -1,0 +1,55 @@
+# importacao das bibliotecas
+import pandas as pd
+import re
+import seaborn as sns
+import numpy as np
+import matplotlib.pyplot as plt
+
+# a variavel "data" agora é o meu arquivo
+data = pd.read_excel('/Users/Augusto/Downloads/Empresas cornelio procopio/cornelioprocopio extenso.xlsx')
+
+# excluindo as colunas que não são de interesse
+data.drop(['cnpj','raiz_cnpj','matriz_filial','razao_social','situacao_cadastral','socios','data_inicio_atividade','cnae_fiscal','cnae_principal_desc_secao','cnae_principal_desc_divisao','cnae_principal_desc_grupo','cnae_principal_desc_classe','cnae_principal_desc_subclasse','cnae_fiscal_secundaria','cnae_fiscal_secundaria2','descricao_tipo_logradouro','logradouro','numero','complemento','cep','municipio','uf','macrorregiao','mesorregiao','microrregiao','coords','qualificacao_do_responsavel','dominio','email','correio_eletronico','correio_eletronico_pertence_contador','linkedin','facebook','whatsapp','instagram','twitter','TELEFONE 1','TELEFONE 2','TELEFONE 3','TELEFONE 4','TELEFONE 5','TELEFONE 6','telefones_concatenados','produto_ncm'], axis = 1, inplace = True)
+# verificando qual ramo de atividade é o mais comum
+data['ramo_de_atividade'].value_counts()
+# agora a media do capital social por ramo de atividade
+media_por_ramo = data.groupby('ramo_de_atividade').capital_social.mean().sort_values(ascending=False)
+media_por_ramo
+
+ax = sns.countplot(x='ramo_de_atividade', data=data, order=media_por_ramo.index)
+ax.set_xticklabels(labels=media_por_ramo.index, rotation='vertical')
+ax.set_ylabel('Quantidade de Empresas')
+ax.set_xlabel('Ramo de Atividade')
+ax.set_title('Quantidade de Empresas por Ramo')
+
+ax = sns.barplot(media_por_ramo)
+ax.set_xticklabels(labels = media_por_ramo.index, rotation='vertical')
+ax.set_ylabel('Media do Capital')
+ax.set_xlabel('Ramo de Atividade')
+ax.set_title('Media do Capital por atividade')
+
+from seaborn import objects as so
+fig = plt.figure()
+(so.Plot(data, x="ramo_de_atividade", color="faixa_faturamento_grupo").add(so.Bar(), so.Count(), so.Stack()).on(fig).plot())
+for ax in fig.axes:
+    ax.tick_params("x", rotation=90)
+
+from sklearn.preprocessing import LabelEncoder
+
+analise = data.loc[:, ['qtde_filiais', 'ramo_de_atividade', 'porte', 'capital_social', 'faixa_faturamento_grupo']]
+
+# Convertendo colunas qualitativas em colunas dummy
+le = LabelEncoder()
+analise['ramo_de_atividade'] = le.fit_transform(analise['ramo_de_atividade'])
+analise['porte'] = le.fit_transform(analise['porte'])
+analise['faixa_faturamento_grupo'] = le.fit_transform(analise['faixa_faturamento_grupo'])
+
+
+# Calculando a matriz de correlação
+corr = analise.corr()
+
+# Plotando a matriz de correlação
+plt.figure(figsize=(10, 8))
+ax = sns.heatmap(corr, xticklabels=corr.columns.values, yticklabels=corr.columns.values,
+                 linewidths=0.25, vmax=1.0, square=True, cmap='coolwarm', linecolor='black', annot=False)
+plt.show()
