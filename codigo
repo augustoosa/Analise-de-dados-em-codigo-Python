@@ -10,8 +10,10 @@ data = pd.read_excel('/Users/Augusto/Downloads/Empresas cornelio procopio/cornel
 
 # excluindo as colunas que não são de interesse
 data.drop(['cnpj','raiz_cnpj','matriz_filial','razao_social','situacao_cadastral','socios','data_inicio_atividade','cnae_fiscal','cnae_principal_desc_secao','cnae_principal_desc_divisao','cnae_principal_desc_grupo','cnae_principal_desc_classe','cnae_principal_desc_subclasse','cnae_fiscal_secundaria','cnae_fiscal_secundaria2','descricao_tipo_logradouro','logradouro','numero','complemento','cep','municipio','uf','macrorregiao','mesorregiao','microrregiao','coords','qualificacao_do_responsavel','dominio','email','correio_eletronico','correio_eletronico_pertence_contador','linkedin','facebook','whatsapp','instagram','twitter','TELEFONE 1','TELEFONE 2','TELEFONE 3','TELEFONE 4','TELEFONE 5','TELEFONE 6','telefones_concatenados','produto_ncm'], axis = 1, inplace = True)
+
 # verificando qual ramo de atividade é o mais comum
 data['ramo_de_atividade'].value_counts()
+
 # agora a media do capital social por ramo de atividade
 media_por_ramo = data.groupby('ramo_de_atividade').capital_social.mean().sort_values(ascending=False)
 media_por_ramo
@@ -22,11 +24,13 @@ ax.set_ylabel('Quantidade de Empresas')
 ax.set_xlabel('Ramo de Atividade')
 ax.set_title('Quantidade de Empresas por Ramo')
 
+
 ax = sns.barplot(media_por_ramo)
 ax.set_xticklabels(labels = media_por_ramo.index, rotation='vertical')
 ax.set_ylabel('Media do Capital')
 ax.set_xlabel('Ramo de Atividade')
 ax.set_title('Media do Capital por atividade')
+
 
 from seaborn import objects as so
 fig = plt.figure()
